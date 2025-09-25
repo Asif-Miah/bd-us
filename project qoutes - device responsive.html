@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bangladesh-US Personal Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    :root {
+      --bd-color: #00A86B;
+      --us-color: #B22234;
+      --heading-bd: #00A86B;
+      --heading-us: #B22234;
+      --heading: #fdc300;
+      --body: #ffffff;
+      --news-bg: #f5f5f5;
+      --news-bd: #00A86B;
+      --news-us: #B22234;
+      --font-bd: #00A86B;
+      --font-us: #B22234;
+      --font-heading: #fdc300;
+      --font-body: #ffffff;
+      --card-bg: rgba(255,255,255,0.15);
+      --card-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; width: 100%; }
+    body {
+      min-height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--gradient);
+      background-size: cover;
+      color: var(--font-body);
+      transition: background-image 1s ease-in-out;
+    }
+    .dashboard {
+      display: grid;
+      grid-template-columns: 1fr 2fr 1fr;
+      grid-template-rows: auto 1fr auto;
+      min-height: 100vh;
+      gap: 15px;
+      padding: 15px;
+    }
+    .header {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 5px;
+    }
+    .weather-cards {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: var(--card-shadow);
+      min-width: 0;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.35);
+    }
+    .bd-card { border-left: 4px solid var(--bd-color); }
+    .us-card { border-left: 4px solid var(--us-color); }
+    .country-flag {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+    .location { 
+      font-size: 16px; 
+      opacity: 0.9; 
+      margin-bottom: 5px; 
+      font-weight: 500;
+      color: var(--font-heading);
+    }
+    .time { font-size: 28px; font-weight: bold; margin: 8px 0; }
+    .date { font-size: 15px; opacity: 0.8; }
+    .currency { font-size: 14px; margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.2); }
+    .left-panel, .right-panel, .center-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      min-width: 0;
+    }
+    .quote-section {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+    }
+    .quote-box {
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(15px);
+      border-radius: 20px;
+      padding: 30px;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.1);
+      max-width: 600px;
+      margin: auto;
+    }
+    .quote {
+      font-size: 24px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+      font-style: italic;
+      color: var(--font-heading);
+      text-shadow: 0 1px 6px #333;
+    }
+    .author {
+      font-size: 18px;
+      opacity: 0.8;
+      font-weight: 300;
+      color: var(--font-body);
+    }
+    .weather-card {
+      text-align: center;
+    }
+    .weather-card h3 {
+      color: var(--font-heading);
+      font-size: 18px;
+      margin-bottom: 8px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+    .weather-temp {
+      font-size: 36px;
+      font-weight: bold;
+      margin: 12px 0;
+      color: var(--font-heading);
+    }
+    .weather-desc {
+      font-size: 15px;
+      opacity: 0.9;
+      color: var(--font-body);
+      text-transform: capitalize;
+    }
+    .weather-details {
+      font-size: 13px;
+      margin-top: 8px;
+      opacity: 0.8;
+      color: var(--font-body);
+    }
+    .news-card {
+      height: 220px;
+      overflow-y: auto;
+      background: rgba(255,255,255,0.09);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.11);
+      min-width: 0;
+    }
+    .news-card h3 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      font-weight: bold;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+      padding-bottom: 7px;
+      color: var(--heading);
+      letter-spacing: 1px;
+    }
+    .news-item {
+      margin-bottom: 10px;
+      padding: 8px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 7px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      color: var(--font-body);
+      font-weight: 500;
+    }
+    .news-item a {
+      color: var(--heading);
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .news-item:hover {
+      background: rgba(255,255,255,0.2);
+      color: var(--font-heading);
+    }
+    .airlines-card {
+      background: rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 13px;
+      margin-top: 8px;
+      min-width: 0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    .airlines-card h3 {
+      font-size: 17px;
+      color: var(--heading);
+      margin-bottom: 7px;
+      font-weight: bold;
+    }
+    .airlines-list {
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--font-body);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+    }
+    .airlines-list a {
+      color: var(--heading);
+      font-weight: bold;
+      text-decoration: none;
+      margin-right: 0;
+      transition: color 0.2s;
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+    .airlines-list a:hover {
+      color: var(--heading-us);
+      text-decoration: underline;
+      background: rgba(255,255,255,0.2);
+    }
+    .prayer-times {
+      text-align: center;
+    }
+    .prayer-times h3 {
+      margin-bottom: 12px;
+      font-size: 17px;
+      color: var(--font-heading);
+    }
+    .prayer-time {
+      display: flex;
+      justify-content: space-between;
+      margin: 7px 0;
+      font-size: 15px;
+      color: var(--font-body);
+    }
+    .prayer-time.current {
+      background: rgba(255,255,255,0.19);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-weight: bold;
+      color: var(--heading);
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      min-width: 0;
+    }
+    .stat-item {
+      background: rgba(255,255,255,0.1);
+      padding: 14px;
+      border-radius: 10px;
+      text-align: center;
+      min-width: 0;
+    }
+    .stat-value {
+      font-size: 21px;
+      font-weight: bold;
+      color: var(--heading);
+    }
+    .stat-label {
+      font-size: 13px;
+      opacity: 0.8;
+      margin-top: 4px;
+      color: var(--font-body);
+    }
+    .footer {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      opacity: 0.7;
+      padding-top: 8px;
+      color: var(--font-body);
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .control-btn {
+      background: rgba(255,255,255,0.21);
+      border: none;
+      color: var(--font-body);
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      outline: none;
+    }
+    .control-btn:hover {
+      background: rgba(255,255,255,0.35);
+      transform: scale(1.05);
+      color: var(--heading);
+    }
+    .loading {
+      opacity: 0.6;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+    /* --- Responsive --- */
+    @media (max-width: 1200px) {
+      .dashboard { grid-template-columns: 1fr 1fr; }
+      .center-panel { grid-column: span 2; }
+    }
+    @media (max-width: 900px) {
+      .dashboard { grid-template-columns: 1fr; grid-template-rows: auto 1fr auto;}
+      .center-panel, .left-panel, .right-panel {
+        grid-column: span 1;
+      }
+      .left-panel, .right-panel, .center-panel { gap: 12px; }
+      .header, .footer { flex-direction: column; gap: 10px;}
+    }
+    @media (max-width: 650px) {
+      .dashboard { padding: 5px; gap: 8px;}
+      .header, .footer { flex-direction: column; gap: 8px;}
+      .left-panel, .right-panel, .center-panel { gap: 8px;}
+      .card, .news-card, .quote-box, .airlines-card { padding: 10px;}
+      .weather-temp { font-size: 20px;}
+      .stat-value { font-size: 14px;}
+      .location, .date, .currency, .stat-label { font-size: 12px;}
+      .controls { flex-direction: column; gap: 6px;}
+      .airlines-list {
+        flex-direction: column;
+        gap: 2px 0;
+      }
+    }
+    @media (max-width: 420px) {
+      body { font-size: 12px;}
+      .weather-temp { font-size: 16px;}
+      .quote { font-size: 16px;}
+      .quote-box { padding: 4px;}
+      .card, .news-card, .airlines-card { padding: 4px;}
+      .footer { font-size: 11px;}
+    }
+    ::-webkit-scrollbar { width: 4px;}
+    ::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); border-radius: 2px;}
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 2px;}
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <!-- Header with Time Cards -->
+    <div class="header">
+      <div class="weather-cards">
+        <div class="card time-card bd-card">
+          <div class="country-flag">🇧🇩</div>
+          <div class="location">Dhaka, Bangladesh</div>
+          <div class="time" id="bdTime">--:--:--</div>
+          <div class="date" id="bdDate">Loading...</div>
+          <div class="currency" id="bdCurrency">1 USD = -- BDT</div>
+        </div>
+        <div class="card time-card us-card">
+          <div class="country-flag">🇺🇸</div>
+          <div class="location">New York, USA</div>
+          <div class="time" id="usTime">--:--:--</div>
+          <div class="date" id="usDate">Loading...</div>
+          <div class="currency" id="usCurrency">1 BDT = -- USD</div>
+        </div>
+      </div>
+      <div class="controls">
+        <button class="control-btn" onclick="fetchQuote()">New Quote</button>
+        <button class="control-btn" onclick="updateBackground()">New Background</button>
+        <button class="control-btn" onclick="refreshAll()">Refresh All</button>
+      </div>
+    </div>
+    <!-- Left Panel -->
+    <div class="left-panel">
+      <!-- Weather Cards -->
+      <div class="card weather-card">
+        <div class="country-flag">🇧🇩</div>
+        <h3>Dhaka Weather</h3>
+        <div class="weather-temp" id="bdTemp">--°</div>
+        <div class="weather-desc" id="bdWeatherDesc">Loading...</div>
+        <div class="weather-details" id="bdWeatherDetails"></div>
+      </div>
+      <div class="card weather-card">
+        <div class="country-flag">🇺🇸</div>
+        <h3>New York Weather</h3>
+        <div class="weather-temp" id="usTemp">--°</div>
+        <div class="weather-desc" id="usWeatherDesc">Loading...</div>
+        <div class="weather-details" id="usWeatherDetails"></div>
+      </div>
+      <!-- Prayer Times -->
+      <div class="card prayer-times">
+        <h3>🕌 Prayer Times (Dhaka)</h3>
+        <div id="bdPrayerTimes">Loading...</div>
+      </div>
+      <div class="card prayer-times">
+        <h3>🕌 Prayer Times (New York)</h3>
+        <div id="usPrayerTimes">Loading...</div>
+      </div>
+      <!-- Airlines Links BD -->
+      <div class="airlines-card">
+        <h3>✈ Top Bangladesh Airlines</h3>
+        <div class="airlines-list">
+          <a href="https://biman-airlines.com/" target="_blank">Biman Bangladesh Airlines</a>
+          <a href="https://www.us-banglaairlines.com/" target="_blank">US-Bangla Airlines</a>
+          <a href="https://www.novair.com.bd/" target="_blank">Novoair</a>
+          <a href="https://www.regentairways.com/" target="_blank">Regent Airways</a>
+        </div>
+      </div>
+    </div>
+    <!-- Center Panel -->
+    <div class="center-panel">
+      <!-- Quote Section -->
+      <div class="quote-section">
+        <div class="quote-box">
+          <div class="quote" id="quote">Loading inspirational quote...</div>
+          <div class="author" id="author"></div>
+        </div>
+      </div>
+      <!-- Stats Grid -->
+      <div class="card stats-grid">
+        <div class="stat-item">
+          <div class="stat-value" id="timezoneDiff">+11h</div>
+          <div class="stat-label">Time Difference</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="distanceKM">12,573</div>
+          <div class="stat-label">Distance (km)</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="tempDiff">--°</div>
+          <div class="stat-label">Temp Difference</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="currencyGain">--</div>
+          <div class="stat-label">Currency Strength</div>
+        </div>
+      </div>
+    </div>
+    <!-- Right Panel -->
+    <div class="right-panel">
+      <!-- Bangladesh News -->
+      <div class="card news-card">
+        <h3>📰 Bangladesh News</h3>
+        <div id="bdNews">Loading latest news...</div>
+        <div style="margin-top:8px;font-size:12px;">
+          <a href="https://www.prothomalo.com/" target="_blank" style="color:var(--news-bd);font-weight:bold;">Prothom Alo</a> | 
+          <a href="https://www.thedailystar.net/" target="_blank" style="color:var(--news-bd);font-weight:bold;">Daily Star</a> | 
+          <a href="https://www.bdnews24.com/" target="_blank" style="color:var(--news-bd);font-weight:bold;">BDNews24</a>
+        </div>
+      </div>
+      <!-- US News -->
+      <div class="card news-card">
+        <h3>📰 US News</h3>
+        <div id="usNews">Loading latest news...</div>
+        <div style="margin-top:8px;font-size:12px;">
+          <a href="https://www.nytimes.com/" target="_blank" style="color:var(--news-us);font-weight:bold;">NY Times</a> | 
+          <a href="https://www.cnn.com/" target="_blank" style="color:var(--news-us);font-weight:bold;">CNN</a> | 
+          <a href="https://www.usatoday.com/" target="_blank" style="color:var(--news-us);font-weight:bold;">USA Today</a>
+        </div>
+      </div>
+      <!-- Airlines Links US -->
+      <div class="airlines-card">
+        <h3>✈ Top US Airlines</h3>
+        <div class="airlines-list">
+          <a href="https://www.delta.com/" target="_blank">Delta Airlines</a>
+          <a href="https://www.united.com/" target="_blank">United Airlines</a>
+          <a href="https://www.aa.com/" target="_blank">American Airlines</a>
+          <a href="https://www.southwest.com/" target="_blank">Southwest Airlines</a>
+        </div>
+      </div>
+      <!-- Reminders/Messages -->
+      <div class="card">
+        <h3 style="color:var(--heading);">💝 Messages from Home</h3>
+        <div id="homeMessages">
+          <div style="text-align: center; padding: 20px; font-style: italic; opacity: 0.8; color:var(--font-body);">
+            "Missing you from Dhaka! Stay strong and keep chasing your dreams! 🌟"<br><br>
+            - Your Family ❤️
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Footer -->
+    <div class="footer">
+      <div>Last updated: <span id="lastUpdate">--</span></div>
+      <div>🏠 From Bangladesh to USA with ❤️</div>
+      <div id="status">Ready</div>
+    </div>
+  </div>
+<script>
+let bdTimeOffset = 0, usTimeOffset = 0, exchangeRate = 110;
+const fallbackQuotes = [
+  { content: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
+  { content: "Success is not final, failure is not fatal: it is the courage to continue that counts.", author: "Winston Churchill" },
+  { content: "Believe you can and you're halfway there.", author: "Theodore Roosevelt" },
+  { content: "Dream it. Wish it. Do it.", author: "Unknown" }
+];
+const fallbackNews = {
+  bd: [
+    {title:"Bangladesh economy shows steady growth", link:"https://www.prothomalo.com/business"},
+    {title:"New infrastructure projects in Dhaka", link:"https://www.thedailystar.net/news/dhaka"},
+    {title:"Education reforms across Bangladesh", link:"https://www.bdnews24.com/education"},
+    {title:"Digital Bangladesh initiative expands", link:"https://www.thedailystar.net/tech"}
+  ],
+  us: [
+    {title:"Tech industry continues robust growth", link:"https://www.nytimes.com/section/technology"},
+    {title:"New immigration policies under discussion", link:"https://www.cnn.com/politics"},
+    {title:"Economic indicators show positive trends", link:"https://www.usatoday.com/money"},
+    {title:"Infrastructure investments announced", link:"https://www.nytimes.com/section/business"}
+  ]
+};
+const prayerTimesDhaka = {Fajr:"05:30",Dhuhr:"12:15",Asr:"16:45",Maghrib:"18:30",Isha:"20:00"};
+const prayerTimesNewYork = {Fajr:"05:45",Dhuhr:"12:30",Asr:"15:30",Maghrib:"17:45",Isha:"19:15"};
+function updateStatus(message){document.getElementById('status').textContent=message;}
+async function fetchTimeData(){
+  try{
+    const [bdResponse, usResponse]=await Promise.all([
+      fetch("https://timeapi.io/api/Time/current/zone?timeZone=Asia/Dhaka"),
+      fetch("https://timeapi.io/api/Time/current/zone?timeZone=America/New_York")
+    ]);
+    if(bdResponse.ok&&usResponse.ok){
+      const bdData=await bdResponse.json(),usData=await usResponse.json();
+      const bdTime=new Date(bdData.dateTime),usTime=new Date(usData.dateTime),now=Date.now();
+      bdTimeOffset=bdTime.getTime()-now;usTimeOffset=usTime.getTime()-now;return true;
+    }throw new Error("Time API failed");
+  }catch(e){
+    bdTimeOffset=(6*60*60*1000)-(new Date().getTimezoneOffset()*60*1000);
+    usTimeOffset=(-5*60*60*1000)-(new Date().getTimezoneOffset()*60*1000);
+    return false;
+  }
+}
+function updateClocks(){
+  const now=Date.now();
+  if(typeof bdTimeOffset==="number"&&typeof usTimeOffset==="number"){
+    const bdTime=new Date(now+bdTimeOffset),usTime=new Date(now+usTimeOffset);
+    document.getElementById('bdTime').textContent=bdTime.toLocaleTimeString('en-US',{hour12:true,hour:'numeric',minute:'2-digit',second:'2-digit'});
+    document.getElementById('usTime').textContent=usTime.toLocaleTimeString('en-US',{hour12:true,hour:'numeric',minute:'2-digit',second:'2-digit'});
+    document.getElementById('bdDate').textContent=bdTime.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+    document.getElementById('usDate').textContent=usTime.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+    const timeDiff=Math.abs(bdTime.getHours()-usTime.getHours());
+    document.getElementById('timezoneDiff').textContent=`${timeDiff}h`;
+  }
+}
+async function fetchCurrencyData(){
+  try{
+    const response=await fetch("https://api.exchangerate-api.com/v4/latest/USD");
+    if(response.ok){
+      const data=await response.json();
+      if(data.rates&&data.rates.BDT){
+        exchangeRate=data.rates.BDT;
+        document.getElementById('bdCurrency').textContent=`1 USD = ${exchangeRate.toFixed(2)} BDT`;
+        document.getElementById('usCurrency').textContent=`1 BDT = ${(1/exchangeRate).toFixed(4)} USD`;
+        document.getElementById('currencyGain').textContent=exchangeRate>110?"Weak":"Strong";
+        return true;
+      }
+    }throw new Error("Currency API failed");
+  }catch(e){
+    document.getElementById('bdCurrency').textContent=`1 USD ≈ ${exchangeRate} BDT`;
+    document.getElementById('usCurrency').textContent=`1 BDT ≈ ${(1/exchangeRate).toFixed(4)} USD`;
+    return false;
+  }
+}
+async function fetchWeatherData(){
+  // Fallback only, as public API unavailable
+  document.getElementById('bdTemp').textContent="28°C";
+  document.getElementById('bdWeatherDesc').textContent="Partly cloudy";
+  document.getElementById('bdWeatherDetails').textContent="Humidity: 75% | Wind: 12 km/h";
+  document.getElementById('usTemp').textContent="15°C";
+  document.getElementById('usWeatherDesc').textContent="Clear sky";
+  document.getElementById('usWeatherDetails').textContent="Humidity: 45% | Wind: 8 km/h";
+  document.getElementById('tempDiff').textContent="13°C";
+}
+async function fetchQuote(){
+  try{
+    const response=await fetch("https://api.quotable.io/random?minLength=50&maxLength=150");
+    if(response.ok){
+      const data=await response.json();
+      document.getElementById('quote').textContent=`"${data.content}"`;
+      document.getElementById('author').textContent=`— ${data.author}`;
+      return true;
+    }throw new Error("Quote API failed");
+  }catch(e){
+    const q=fallbackQuotes[Math.floor(Math.random()*fallbackQuotes.length)];
+    document.getElementById('quote').textContent=`"${q.content}"`;
+    document.getElementById('author').textContent=`— ${q.author}`;
+    return false;
+  }
+}
+async function updateBackground(){
+  try{
+    const randomId=Math.floor(Math.random()*1000);
+    const imageUrl=`https://picsum.photos/1920/1080?random=${randomId}`;
+    const img=new Image();
+    img.onload=()=>{document.body.style.backgroundImage=`linear-gradient(rgba(0,0,0,0.3),rgba(0,0,0,0.3)),url('${imageUrl}')`;};
+    img.onerror=()=>{
+      const gradients=[
+        'linear-gradient(135deg,#667eea 0%,#764ba2 100%)',
+        'linear-gradient(135deg,#f093fb 0%,#f5576c 100%)',
+        'linear-gradient(135deg,#4facfe 0%,#00f2fe 100%)',
+        'linear-gradient(135deg,#43e97b 0%,#38f9d7 100%)'
+      ];
+      document.body.style.backgroundImage=gradients[Math.floor(Math.random()*gradients.length)];
+    };
+    img.src=imageUrl;
+  }catch(e){}
+}
+function formatTo12Hour(time24){
+  const [h,m]=time24.split(':').map(Number),period=h>=12?'PM':'AM',h12=h%12||12;
+  return `${h12}:${m.toString().padStart(2,'0')} ${period}`;
+}
+function updatePrayerTimes(){
+  const now=new Date();
+  const bdTime=new Date(now.getTime()+bdTimeOffset),usTime=new Date(now.getTime()+usTimeOffset);
+  updatePrayerTimeDisplay('bdPrayerTimes',prayerTimesDhaka,bdTime);
+  updatePrayerTimeDisplay('usPrayerTimes',prayerTimesNewYork,usTime);
+}
+function updatePrayerTimeDisplay(containerId,prayerTimes,currentTime){
+  const container=document.getElementById(containerId),ch=currentTime.getHours(),cm=currentTime.getMinutes(),ct=ch*60+cm;
+  let html='';
+  for(const [prayer,time] of Object.entries(prayerTimes)){
+    const [h,m]=time.split(':').map(Number),pt=h*60+m;
+    const isCurrent=Math.abs(ct-pt)<30;
+    html+=`<div class="prayer-time${isCurrent?' current':''}"><span>${prayer}</span><span>${formatTo12Hour(time)}</span></div>`;
+  }
+  container.innerHTML=html;
+}
+function loadNews(){
+  const bdNews=document.getElementById('bdNews'),usNews=document.getElementById('usNews');
+  bdNews.innerHTML=fallbackNews.bd.map(n=>`<div class="news-item"><a href="${n.link}" target="_blank">${n.title}</a></div>`).join('');
+  usNews.innerHTML=fallbackNews.us.map(n=>`<div class="news-item"><a href="${n.link}" target="_blank">${n.title}</a></div>`).join('');
+}
+function refreshAll(){
+  updateStatus("Refreshing all data...");
+  Promise.allSettled([
+    fetchTimeData(),
+    fetchCurrencyData(),
+    fetchWeatherData(),
+    fetchQuote(),
+    updateBackground()
+  ]).then(()=>{
+    updatePrayerTimes();
+    loadNews();
+    document.getElementById('lastUpdate').textContent=new Date().toLocaleTimeString();
+    updateStatus("All data refreshed");
+    setTimeout(()=>updateStatus("Ready"),2600);
+  });
+}
+function initialize(){
+  updateStatus("Initializing dashboard...");
+  document.body.style.backgroundImage='linear-gradient(135deg,#667eea 0%,#764ba2 100%)';
+  refreshAll();
+  setInterval(updateClocks,1000);
+  setInterval(fetchTimeData,180000);
+  setInterval(fetchCurrencyData,600000);
+  setInterval(fetchQuote,120000);
+  setInterval(updateBackground,240000);
+  setInterval(updatePrayerTimes,60000);
+  updateStatus("Dashboard ready!");
+  setTimeout(()=>updateStatus("Live"),1800);
+}
+initialize();
+</script>
+</body>
+</html>
